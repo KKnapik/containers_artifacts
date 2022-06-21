@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile
+  labels:
+    app: userprofile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userprofile
+  template:
+    metadata:
+      labels:
+        app: userprofile
+    spec:
+      containers:
+      - name: userprofile
+        image: registryhnj9475.azurecr.io/tripinsights/userprofile:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userprofile-svc
+  labels:
+    run: userprofile
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: userprofile

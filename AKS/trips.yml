@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+  labels:
+    app: trips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+      - name: trips
+        image: registryhnj9475.azurecr.io/tripinsights/trips:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-svc
+  labels:
+    run: trips
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: trips
