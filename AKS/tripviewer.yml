@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+  labels:
+    app: tripviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers:
+      - name: tripviewer
+        image: registryhnj9475.azurecr.io/tripinsights/tripviewer:1.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tripviewer-svc
+  labels:
+    run: tripviewer
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: tripviewer
+  type: LoadBalancer
