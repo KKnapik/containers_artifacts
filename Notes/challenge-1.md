@@ -9,9 +9,6 @@ Simulator url: simulatorregistryhnj9475.ukwest.azurecontainer.io
 api-dev password: yB9pw7Hp2
 web-dev password: fF8il1So4
 
-hacker2gvv@msftopenhack7017ops.onmicrosoft.com
-YS$$)q7s
-
 Username = Hacker
 password = Password123!
 
