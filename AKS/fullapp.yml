@@ -1,0 +1,260 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poi
+  labels:
+    app: poi
+  namespace: api-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poi
+  template:
+    metadata:
+      labels:
+        app: poi
+    spec:
+      containers:
+      - name: poi
+        image: registryhnj9475.azurecr.io/tripinsights/poi:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: poi-svc
+  labels:
+    run: poi
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: poi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+  labels:
+    app: trips
+  namespace: api-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      containers:
+      - name: trips
+        image: registryhnj9475.azurecr.io/tripinsights/trips:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-svc
+  labels:
+    run: trips
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: trips
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+  labels:
+    app: tripviewer
+  namespace: web-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers:
+      - name: tripviewer
+        image: registryhnj9475.azurecr.io/tripinsights/tripviewer:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: USERPROFILE_API_ENDPOINT
+            value: "http://userprofile-svc:80"
+          - name: TRIPS_API_ENDPOINT
+            value: "http://trips-svc:80"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"  
+  name: tripviewer-svc
+  labels:
+    run: tripviewer
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: tripviewer
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-java
+  labels:
+    app: user-java
+  namespace: api-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-java
+  template:
+    metadata:
+      labels:
+        app: user-java
+    spec:
+      containers:
+      - name: user-java
+        image: registryhnj9475.azurecr.io/tripinsights/user-java:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-java-svc
+  labels:
+    run: user-java
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: user-java
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile
+  labels:
+    app: userprofile
+  namespace: api-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userprofile
+  template:
+    metadata:
+      labels:
+        app: userprofile
+    spec:
+      containers:
+      - name: userprofile
+        image: registryhnj9475.azurecr.io/tripinsights/userprofile:1.0
+        ports:
+        - containerPort: 80
+        env:
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqluser
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlpass
+          - name: SQL_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: sqlaccess
+                key: sqlserver
+          - name: DB_NAME
+            value: "mydrivingDB"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userprofile-svc
+  labels:
+    run: userprofile
+  namespace: api-dev
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: userprofile
