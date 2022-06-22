@@ -4,6 +4,7 @@ metadata:
   name: poi
   labels:
     app: poi
+  namespace: api-dev
 spec:
   replicas: 1
   selector:
@@ -44,6 +45,7 @@ metadata:
   name: poi-svc
   labels:
     run: poi
+  namespace: api-dev
 spec:
   ports:
   - port: 80

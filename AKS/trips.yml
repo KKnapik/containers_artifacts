@@ -4,6 +4,7 @@ metadata:
   name: trips
   labels:
     app: trips
+  namespace: api-dev
 spec:
   replicas: 1
   selector:
@@ -44,6 +45,7 @@ metadata:
   name: trips-svc
   labels:
     run: trips
+  namespace: api-dev
 spec:
   ports:
   - port: 80
