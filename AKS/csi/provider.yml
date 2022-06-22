@@ -2,26 +2,34 @@
 apiVersion: secrets-store.csi.x-k8s.io/v1
 kind: SecretProviderClass
 metadata:
-  name: ingress-cert
-  namespace: ingress-controller
+  name: api-kv-dbaccess
+  namespace: api-dev
 spec:
   provider: azure
   secretObjects:
-  - secretName: ingress-cert
-    type: kubernetes.io/tls
+  - secretName: sqlaccess
+    type: Opaque
     data:
-    - key: tls.key
-      objectName: poc-dr-ingress
-    - key: tls.crt
-      objectName: poc-dr-ingress
+    - objectName: sqluser
+      key: sqluser
+    - objectName: sqlpass
+      key: sqlpass
+    - objectName: sqlserver
+      key: sqlserver
   parameters:
     usePodIdentity: "false"
     useVMManagedIdentity: "true"          # Set to true for using managed identity
-    userAssignedIdentityID: ""  # Set the clientID of the user-assigned managed identity to use
-    keyvaultName:         # Set to the name of your key vault
+    userAssignedIdentityID: "1961af15-7249-4c72-88f6-ffa6e8c313b5"  # Set the clientID of the user-assigned managed identity to use
+    keyvaultName: "kv-challenge4"       # Set to the name of your key vault
     objects:  |
       array:
         - |
           objectName: sqluser
           objectType: secret
-    tenantId: 
+        - |
+          objectName: sqlpass
+          objectType: secret
+        - |
+          objectName: sqlserver
+          objectType: secret
+    tenantId: "c0795bf8-5567-436d-bdee-b8c4dde7447d"

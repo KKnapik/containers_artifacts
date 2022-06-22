@@ -14,12 +14,16 @@ spec:
     metadata:
       labels:
         app: poi
-    spec:
+    spec:   
       containers:
       - name: poi
         image: registryhnj9475.azurecr.io/tripinsights/poi:1.0
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: secrets-store01-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
         env:
           - name: SQL_USER
             valueFrom:
@@ -38,6 +42,13 @@ spec:
                 key: sqlserver
           - name: DB_NAME
             value: "mydrivingDB"
+      volumes:
+      - name: secrets-store01-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "api-kv-dbaccess"
 ---
 apiVersion: v1
 kind: Service
